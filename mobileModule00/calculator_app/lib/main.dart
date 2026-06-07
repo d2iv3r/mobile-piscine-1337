@@ -106,7 +106,7 @@ String calculateResult(String input) {
     double result = exp.evaluate(EvaluationType.REAL, cm);
     return result.toString();
   } catch (e) {
-    return 'Error: $e';
+    return '$e';
   }
 }
 
