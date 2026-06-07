@@ -27,7 +27,7 @@ class _CentredTextButtonWidgetState extends State<CentredTextButtonWidget> {
               color: Color.fromRGBO(84, 85, 0, 1),
             ),
             child: Text(
-              _isButtonPressed ? 'Hello world' : 'A simple text',
+              _isButtonPressed ? 'Hello World!' : 'A simple text',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 28,

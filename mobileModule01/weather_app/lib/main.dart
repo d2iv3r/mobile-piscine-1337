@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 void main() {
   runApp(const MainApp());
 }
@@ -13,64 +14,87 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  int index = 0;
+  int currentIndex = 0;
+  final PageController _pageController = PageController();
   final TextEditingController _cityController = TextEditingController();
+  String searchValue = '';
 
-  final List<Widget> pages = [
-    Center(child: Text('Currently')),
-    Center(child: Text('Today')),
-    Center(child: Text('Weekly')),
-  ];
+
+  void _handleOnTab(int value) {
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        value,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+      );
+    }
+    setState(() {
+      currentIndex = value;
+    });
+  }
+
+  void _handleOnChanged(String value) {
+    setState(() {
+      searchValue = value;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 48, 62, 73),
           title: Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: _cityController,
+                  onChanged: _handleOnChanged,
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: 'Enter city name',
+                    border: InputBorder.none,
+                    prefixIcon: Icon(Icons.search, color: Colors.white),
+                    hintText: 'Search location...',
+                    hintStyle: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
+              SizedBox(
+                height: 28,
+                child: VerticalDivider(
+                  color: Colors.white,
+                  thickness: 1,
+                  width: 20,
+                ),
+              ),
               IconButton(
-                icon: Icon(Icons.search),
+                icon: Icon(Icons.near_me, color: Colors.white),
                 onPressed: () {
                   setState(() {
-                    pages[0] = Center(child: Text('Currently\n${_cityController.text}'));
-                    pages[1] = Center(child: Text('Today\n${_cityController.text}'));
-                    pages[2] = Center(child: Text('Weekly\n${_cityController.text}'));
+                    searchValue = "Geolocation";
+                    _cityController.clear();
                   });
                 },
-              )
+              ),
             ],
           ),
         ),
-        body: pages[index],
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: _handleOnTab,
+          children: [
+            Center(child: Text('Currently\n$searchValue', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+            Center(child: Text('Today\n$searchValue', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+            Center(child: Text('Weekly\n$searchValue', textAlign: TextAlign.center, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+          ],
+        ),
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: index,
-          onTap: (int index) {
-            setState(() {
-              this.index = index;
-            });
-          },
-          items: [
-            BottomNavigationBarItem(
-              label: 'Currently',
-              icon: Icon(Icons.now_widgets),
-              
-            ),
-            BottomNavigationBarItem(
-              label: 'Today',
-              icon: Icon(Icons.today),
-            ),
-            BottomNavigationBarItem(
-              label: 'Weekly',
-              icon: Icon(Icons.calendar_view_week),
-            )
+          currentIndex: currentIndex,
+          onTap: _handleOnTab,
+          items: const [
+            BottomNavigationBarItem(label: 'Currently', icon: Icon(Icons.now_widgets)),
+            BottomNavigationBarItem(label: 'Today', icon: Icon(Icons.today)),
+            BottomNavigationBarItem(label: 'Weekly', icon: Icon(Icons.calendar_view_week)),
           ],
         ),
       );
