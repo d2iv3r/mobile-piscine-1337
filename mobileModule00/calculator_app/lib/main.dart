@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-
 import 'package:math_expressions/math_expressions.dart';
 
 void main() {
@@ -42,27 +39,56 @@ const List<CalculatorButtonData> calculatorButtons = [
 ];
 
 class DisplayArea extends StatelessWidget {
-  const DisplayArea({super.key});
+  const DisplayArea({
+    super.key,
+    required this.inputController,
+    required this.resultController,
+  });
+
+  final TextEditingController inputController;
+  final TextEditingController resultController;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      color: const Color.fromARGB(255, 30, 43, 59),
+      padding: EdgeInsets.all(8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(
+            controller: inputController,
+            readOnly: true,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              color: Colors.blueGrey,
+              fontSize: 28,
+            ),
             decoration: InputDecoration(
-              hintText: '0',
-              border: OutlineInputBorder(),
+              border: InputBorder.none,
+              hintText: "0",
+              hintStyle: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 28,
+              ),
             ),
             keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 8),
           TextField(
+            controller: resultController,
+            readOnly: true,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              color: Colors.blueGrey,
+              fontSize: 28,
+            ),
             decoration: InputDecoration(
-              hintText: '0',
-              border: OutlineInputBorder(),
+              border: InputBorder.none,
+              hintText: "0",
+              hintStyle: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 28,
+              ),
             ),
             keyboardType: TextInputType.number,
           ),
@@ -70,14 +96,6 @@ class DisplayArea extends StatelessWidget {
       ),
     );
   }
-}
-
-class InitialCalculatorWidget extends StatefulWidget {
-  const InitialCalculatorWidget({super.key});
-
-  @override
-  State<InitialCalculatorWidget> createState() =>
-      _InitialCalculatorWidgetState();
 }
 
 String calculateResult(String input) {
@@ -93,12 +111,74 @@ String calculateResult(String input) {
   }
 }
 
-class _InitialCalculatorWidgetState extends State<InitialCalculatorWidget> {
+class ButtonsWidget extends StatelessWidget {
+  const ButtonsWidget({super.key, required this.handleButtonPress});
 
+  final void Function(CalculatorButtonData) handleButtonPress;
+
+  @override
+  Widget build(BuildContext context) {
+    const crossAxisCount = 5;
+    const gridSpacing = 10.0;
+    const holderPadding = 6.0;
+
+    return Container(
+      color: Colors.blueGrey,
+      padding: EdgeInsets.all(holderPadding),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final rows = (calculatorButtons.length / crossAxisCount).ceil();
+          final usableWidth = constraints.maxWidth - (crossAxisCount - 1) * gridSpacing;
+          final usableHeight = constraints.maxHeight - (rows - 1) * gridSpacing;
+          final itemWidth = usableWidth / crossAxisCount;
+          final itemHeight = usableHeight / rows;
+          final ratio = itemHeight > 0 ? itemWidth / itemHeight : 1.0;
+
+          return GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: calculatorButtons.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: gridSpacing,
+              mainAxisSpacing: gridSpacing,
+              childAspectRatio: ratio,
+            ),
+            itemBuilder: (context, index) {
+              final buttonData = calculatorButtons[index];
+              return ElevatedButton(
+                onPressed: () => handleButtonPress(buttonData),
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(1),
+                  ),
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                ),
+                child: Text(
+                  buttonData.label,
+                  style: TextStyle(
+                    color: buttonData.textColor,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class CalculatorApp extends StatefulWidget {
+  const CalculatorApp({super.key});
+
+  @override
+  State<CalculatorApp> createState() => _CalculatorAppState();
+}
+
+class _CalculatorAppState extends State<CalculatorApp> {
   final TextEditingController _inputController = TextEditingController();
   final TextEditingController _resultController = TextEditingController();
-
-
 
   void handleButtonPress(CalculatorButtonData buttonData) {
     switch (buttonData.label) {
@@ -124,56 +204,30 @@ class _InitialCalculatorWidgetState extends State<InitialCalculatorWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: _inputController,
-          readOnly: true,
-            decoration: InputDecoration(
-              hintText: '0',
-              border: OutlineInputBorder(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Calculator'),
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: DisplayArea(
+                inputController: _inputController,
+                resultController: _resultController,
+              ),
             ),
-            keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _resultController,
-            decoration: InputDecoration(
-              hintText: '0',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-        Expanded(
-          child: GridView.builder(
-            itemCount: calculatorButtons.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              // mainAxisSpacing: 8,
-              // crossAxisSpacing: 8,
-              // childAspectRatio: 1.0,
-            ),
-            itemBuilder: (context, index) {
-              final buttonData = calculatorButtons[index];
-              return ElevatedButton(
-                onPressed: () => handleButtonPress(buttonData),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(1)
-                  ),
-                  backgroundColor: Colors.blueGrey
-                ),
-                child: Text(
-                  buttonData.label,
-                  style: TextStyle(
-                    color: buttonData.textColor,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+          Expanded(
+            flex: 2,
+            child: ButtonsWidget(handleButtonPress: handleButtonPress),
+          )
+        ],
+      ),
     );
   }
 }
@@ -184,14 +238,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Calculator'),
-          centerTitle: true,
-          backgroundColor: Colors.blueAccent,
-        ),
-        body: Center(child: InitialCalculatorWidget()),
-      ),
+      home: CalculatorApp(),
     );
   }
 }
