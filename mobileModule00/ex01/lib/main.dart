@@ -20,15 +20,22 @@ class _CentredTextButtonWidgetState extends State<CentredTextButtonWidget> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            _isButtonPressed ? 'Hello world' : 'A simple text',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              backgroundColor: Colors.lightGreen,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,),
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Color.fromRGBO(84, 85, 0, 1),
             ),
-          SizedBox(height: 20),
+            child: Text(
+              _isButtonPressed ? 'Hello world' : 'A simple text',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 28,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          SizedBox(height: 8),
           ElevatedButton(
             onPressed: () {
               setState(() {
@@ -36,7 +43,12 @@ class _CentredTextButtonWidgetState extends State<CentredTextButtonWidget> {
               });
               debugPrint('Button pressed');
             },
-            child: Text('Click Me'),
+            child: Text(
+              'Click Me',
+              style: TextStyle(
+                color: Color.fromRGBO(84, 85, 0, 1),
+              ),
+            ),
           )
         ],
       ),
@@ -52,7 +64,6 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: CentredTextButtonWidget()
-        
       ),
     );
   }

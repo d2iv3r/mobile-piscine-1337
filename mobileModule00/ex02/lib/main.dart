@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,7 +34,6 @@ const List<CalculatorButtonData> calculatorButtons = [
   CalculatorButtonData(label: '.', type: ButtonType.action),
   CalculatorButtonData(label: '00', type: ButtonType.number),
   CalculatorButtonData(label: '=', type: ButtonType.equal),
-  CalculatorButtonData(label: '', type: ButtonType.none),
 ];
 
 class DisplayArea extends StatelessWidget {
@@ -45,22 +42,32 @@ class DisplayArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      color: const Color.fromARGB(255, 30, 43, 59),
+      padding: EdgeInsets.all(8),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextField(
+            textAlign: TextAlign.right,
             decoration: InputDecoration(
-              hintText: '0',
-              border: OutlineInputBorder(),
+              border: InputBorder.none,
+              hintText: "0",
+              hintStyle: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 28,
+              ),
             ),
             keyboardType: TextInputType.number,
           ),
-          SizedBox(height: 16),
+          SizedBox(height: 8),
           TextField(
+            textAlign: TextAlign.right,
             decoration: InputDecoration(
-              hintText: '0',
-              border: OutlineInputBorder(),
+              border: InputBorder.none,
+              hintText: "0",
+              hintStyle: TextStyle(
+                color: Colors.blueGrey,
+                fontSize: 28,
+              ),
             ),
             keyboardType: TextInputType.number,
           ),
@@ -70,40 +77,54 @@ class DisplayArea extends StatelessWidget {
   }
 }
 
-class InitialCalculatorWidget extends StatefulWidget {
-  const InitialCalculatorWidget({super.key});
+class ButtonsWidget extends StatefulWidget {
+  const ButtonsWidget({super.key});
 
   @override
-  State<InitialCalculatorWidget> createState() =>
-      _InitialCalculatorWidgetState();
+  State<ButtonsWidget> createState() =>
+      _ButtonsWidgetState();
 }
 
-class _InitialCalculatorWidgetState extends State<InitialCalculatorWidget> {
+class _ButtonsWidgetState extends State<ButtonsWidget> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DisplayArea(),
-        Expanded(
-          child: GridView.builder(
+    const crossAxisCount = 5;
+    const gridSpacing = 10.0;
+    const holderPadding = 6.0;
+
+    return Container(
+      color: Colors.blueGrey,
+      padding: EdgeInsets.all(holderPadding),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final rows = (calculatorButtons.length / crossAxisCount).ceil();
+          final usableWidth = constraints.maxWidth - (crossAxisCount - 1) * gridSpacing;
+          final usableHeight = constraints.maxHeight - (rows - 1) * gridSpacing;
+          final itemWidth = usableWidth / crossAxisCount;
+          final itemHeight = usableHeight / rows;
+          final ratio = itemHeight > 0 ? itemWidth / itemHeight : 1.0;
+
+          return GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             itemCount: calculatorButtons.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              // mainAxisSpacing: 8,
-              // crossAxisSpacing: 8,
-              // childAspectRatio: 1.0,
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: gridSpacing,
+              mainAxisSpacing: gridSpacing,
+              childAspectRatio: ratio,
             ),
             itemBuilder: (context, index) {
               final buttonData = calculatorButtons[index];
               return ElevatedButton(
                 onPressed: () {
-                  debugPrint('Button pressed: ${buttonData.label}');
+                  debugPrint('Button pressed :${buttonData.label}');
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(1)
+                    borderRadius: BorderRadius.circular(1),
                   ),
-                  backgroundColor: Colors.blueGrey
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
                 ),
                 child: Text(
                   buttonData.label,
@@ -113,9 +134,9 @@ class _InitialCalculatorWidgetState extends State<InitialCalculatorWidget> {
                 ),
               );
             },
-          ),
-        ),
-      ],
+          );
+        },
+      ),
     );
   }
 }
@@ -128,11 +149,32 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Calculator'),
+          title: Text(
+            'Calculator',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           centerTitle: true,
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.blueGrey,
         ),
-        body: Center(child: InitialCalculatorWidget()),
+        body: Column(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: DisplayArea(),
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: ButtonsWidget(),
+            )
+          ],
+        ),
       ),
     );
   }

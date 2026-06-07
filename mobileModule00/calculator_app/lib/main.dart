@@ -35,7 +35,6 @@ const List<CalculatorButtonData> calculatorButtons = [
   CalculatorButtonData(label: '.', type: ButtonType.action),
   CalculatorButtonData(label: '00', type: ButtonType.number),
   CalculatorButtonData(label: '=', type: ButtonType.equal),
-  CalculatorButtonData(label: '', type: ButtonType.none),
 ];
 
 class DisplayArea extends StatelessWidget {
@@ -183,13 +182,11 @@ class _CalculatorAppState extends State<CalculatorApp> {
   void handleButtonPress(CalculatorButtonData buttonData) {
     switch (buttonData.label) {
       case 'C':
-        debugPrint('Clear last input');
         _inputController.text = _inputController.text.isNotEmpty
             ? _inputController.text.substring(0, _inputController.text.length - 1)
             : '';
         break;
       case 'AC':
-        debugPrint('Clear all inputs');
         _inputController.clear();
         _resultController.clear();
         break;
