@@ -1,16 +1,23 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:medium_weather_app/widgets/city_results_list.dart';
-import 'package:medium_weather_app/widgets/search_controls.dart';
-import 'package:medium_weather_app/widgets/weather_page_view.dart';
-import 'package:medium_weather_app/widgets/weather_pages.dart';
 import 'package:medium_weather_app/services/weather_service.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:medium_weather_app/widgets/weatherBottomNavBar.dart';
+import 'package:medium_weather_app/widgets/city_results_list.dart';
+import 'package:medium_weather_app/widgets/weather_app_bar.dart';
+import 'package:medium_weather_app/widgets/weather_bottom_nav_bar.dart';
+import 'package:medium_weather_app/widgets/weather_pages.dart';
 
 void main() {
   runApp(const MainApp());
+}
+
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(home: HomePage());
+  }
 }
 
 class HomePage extends StatefulWidget {
@@ -20,293 +27,244 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
-  final PageController _pageController = PageController();
-  Timer? _searchDebounce;
+  final _pageController = PageController();
+  final _cityController = TextEditingController();
+  Timer? _debounce;
+
+  // App status
+  int _currentIndex = 0;
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  // Search suggestions
+  List<dynamic> _searchResults = [];
+
+  // Weather data
+  String _locationLines = '';
+  Map<String, dynamic>? _currentWeather;
+  Map<String, dynamic>? _todayWeather;
+  Map<String, dynamic>? _weeklyWeather;
 
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadCurrentLocationWeather();
-    });
-  }
-
-  Future<void> _loadCurrentLocationWeather() async {
-    final permission = await Permission.location.status;
-    if (permission.isGranted) {
-      try {
-        final coordinates = await getCurrentLocation();
-        final city = await reverseGeocode(
-          coordinates.latitude,
-          coordinates.longitude,
-        ).catchError((_) {
-          _showErrorPages(apiFailureMessage);
-          return null;
-        });
-
-        if (!mounted) {
-          return;
-        }
-
-        await updatePages(
-          city ?? {
-            'name': 'Current location',
-            'admin1': '',
-            'country': '',
-            'latitude': coordinates.latitude,
-            'longitude': coordinates.longitude,
-          },
-        );
-      } catch (error) {
-        _showLocationError(error.toString());
-      }
-    } else {
-      await _requestLocationPermission();
-    }
-  }
-
-  Future<void> _requestLocationPermission() async {
-    final status = await Permission.location.request();
-    if (status.isGranted) {
-      await _loadCurrentLocationWeather();
-    } else if (status.isDenied) {
-      _showLocationError(
-        'Geolocation is not available. please enable it in your App settings',
-      );
-    } else if (status.isPermanentlyDenied) {
-      _showLocationError(
-        'Geolocation is not available. please enable it in your App settings',
-      );
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onLocationPressed());
   }
 
   @override
   void dispose() {
-    _searchDebounce?.cancel();
+    _debounce?.cancel();
     _pageController.dispose();
     _cityController.dispose();
     super.dispose();
   }
 
-  void _showLocationError(String message) {
-    _showErrorPages(message);
-  }
+  // ── Location ───────────────────────────────────────────────────────────────
 
-  void _showErrorPages(String message) {
-    if (!mounted) {
-      return;
-    }
-
+  Future<void> _onLocationPressed() async {
+    _cityController.clear();
     setState(() {
-      showCityData = true;
-      pages[0] = WeatherMessagePage(message: message);
-      pages[1] = WeatherMessagePage(message: message);
-      pages[2] = WeatherMessagePage(message: message);
+      _isLoading = true;
+      _errorMessage = null;
+      _searchResults = [];
     });
-  }
 
-  int currentIndex = 0;
-  final TextEditingController _cityController = TextEditingController();
-
-  final List<Widget> pages = [
-    Center(child: Text('Currently')),
-    Center(child: Text('Today')),
-    Center(child: Text('Weekly')),
-  ];
-
-  List<dynamic> result = [];
-  bool showCityData = false;
-
-  Future<void> updatePages(dynamic city) async {
     try {
-      final currentWeatherData = await getCurrentWeather(
-        city['latitude'],
-        city['longitude'],
-      );
-      final todayWeatherData = await getTodayWeather(
-        city['latitude'],
-        city['longitude'],
-      );
-      final weeklyWeatherData = await getWeeklyWeather(
-        city['latitude'],
-        city['longitude'],
-      );
+      final coords = await getCurrentLocation();
+      Map<String, dynamic>? city;
+      try {
+        city = await reverseGeocode(coords.latitude, coords.longitude);
+      } catch (_) {}
 
-      if (!mounted) {
-        return;
-      }
+      city ??= {
+        'name': '${coords.latitude.toStringAsFixed(4)}, ${coords.longitude.toStringAsFixed(4)}',
+        'admin1': '',
+        'country': '',
+        'latitude': coords.latitude,
+        'longitude': coords.longitude,
+      };
 
+      await _fetchWeatherForCity(city);
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
-        final locationLines = [
-          city['name'],
-          if ((city['admin1'] ?? '').toString().isNotEmpty) city['admin1'],
-          if ((city['country'] ?? '').toString().isNotEmpty) city['country'],
-        ].join('\n');
-
-        pages[0] = CurrentWeatherPage(
-          locationLines: locationLines,
-          currentWeatherData: currentWeatherData,
-        );
-        pages[1] = TodayWeatherPage(
-          locationLines: locationLines,
-          todayWeatherData: todayWeatherData,
-        );
-        pages[2] = WeeklyWeatherPage(
-          locationLines: locationLines,
-          weeklyWeatherData: weeklyWeatherData,
-        );
-        showCityData = true;
+        _isLoading = false;
+        _errorMessage =
+            'Geolocation is not available, please enable it in your App settings.';
       });
-    } catch (error) {
-      _showErrorPages(apiFailureMessage);
     }
   }
 
-  void _handleOnSearchChanged(String value) {
-    _searchDebounce?.cancel();
+  // ── Weather fetch ──────────────────────────────────────────────────────────
+
+  Future<void> _fetchWeatherForCity(Map<String, dynamic> city) async {
+    setState(() => _isLoading = true);
+
+    try {
+      _locationLines = [
+        city['name'],
+        if ((city['admin1'] ?? '').toString().isNotEmpty) city['admin1'],
+        if ((city['country'] ?? '').toString().isNotEmpty) city['country'],
+      ].join('\n');
+
+      final results = await Future.wait([
+        getCurrentWeather(city['latitude'], city['longitude']),
+        getTodayWeather(city['latitude'], city['longitude']),
+        getWeeklyWeather(city['latitude'], city['longitude']),
+      ]);
+
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = null;
+        _currentWeather = results[0];
+        _todayWeather = results[1];
+        _weeklyWeather = results[2];
+      });
+    } catch (e) {
+      print('Error fetching weather: $e');
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _errorMessage = apiFailureMessage;
+      });
+    }
+  }
+
+  // ── Search ─────────────────────────────────────────────────────────────────
+
+  void _onSearchChanged(String value) {
+    _debounce?.cancel();
 
     if (value.trim().isEmpty) {
-      setState(() {
-        result = [];
-        showCityData = false;
-      });
+      setState(() => _searchResults = []);
       return;
     }
 
-    setState(() {
-      showCityData = false;
-    });
-
-    _searchDebounce = Timer(const Duration(milliseconds: 500), () async {
+    _debounce = Timer(const Duration(milliseconds: 500), () async {
       final results = await searchCity(value);
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       if (results == null) {
-        _showErrorPages(apiFailureMessage);
-        return;
+        setState(() {
+          _searchResults = [];
+          _errorMessage = apiFailureMessage;
+        });
+      } else if (results.isEmpty) {
+        setState(() {
+          _searchResults = [];
+          _errorMessage = cityNotFoundMessage;
+        });
+      } else {
+        setState(() {
+          _searchResults = results;
+          _errorMessage = null;
+        });
       }
-
-      if (results.isEmpty) {
-        _showErrorPages(cityNotFoundMessage);
-        return;
-      }
-
-      setState(() {
-        result = results;
-      });
     });
   }
 
-  Future<void> _submitSearch(String value) async {
+  Future<void> _onSearchSubmitted(String value) async {
+    if (value.trim().isEmpty) return;
+    _debounce?.cancel();
+
     final results = await searchCity(value);
-    if (!mounted) {
+    if (!mounted) return;
+
+    if (results == null || results.isEmpty) {
+      setState(() {
+        _searchResults = [];
+        _errorMessage = results == null ? apiFailureMessage : cityNotFoundMessage;
+      });
       return;
     }
 
-    if (results == null) {
-      _showErrorPages(apiFailureMessage);
-      return;
-    }
-
-    if (results.isEmpty) {
-      _showErrorPages(cityNotFoundMessage);
-      return;
-    }
-
-    setState(() {
-      showCityData = true;
-    });
-
-    await updatePages(results.first);
+    await _onCitySelected(results.first);
   }
 
-  void _handleOnTab(int value) {
+  Future<void> _onCitySelected(dynamic city) async {
+    _cityController.clear();
+    setState(() => _searchResults = []);
+    await _fetchWeatherForCity(city);
+  }
+
+  // ── Tab navigation ─────────────────────────────────────────────────────────
+
+  void _onTabChanged(int index) {
+    setState(() => _currentIndex = index);
     if (_pageController.hasClients) {
       _pageController.animateToPage(
-        value,
+        index,
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
       );
     }
-    setState(() {
-      currentIndex = value;
-    });
   }
+
+  // ── Pages ──────────────────────────────────────────────────────────────────
+
+  List<Widget> _buildPages() {
+    if (_isLoading) {
+      const loading = Center(child: CircularProgressIndicator());
+      return [loading, loading, loading];
+    }
+
+    if (_errorMessage != null) {
+      final error = WeatherMessagePage(message: _errorMessage!);
+      return [error, error, error];
+    }
+
+    if (_currentWeather != null) {
+      return [
+        CurrentWeatherPage(
+          locationLines: _locationLines,
+          currentWeatherData: _currentWeather!,
+        ),
+        TodayWeatherPage(
+          locationLines: _locationLines,
+          todayWeatherData: _todayWeather!,
+        ),
+        WeeklyWeatherPage(
+          locationLines: _locationLines,
+          weeklyWeatherData: _weeklyWeather!,
+        ),
+      ];
+    }
+
+    // Initial idle state
+    return [
+      const Center(child: Text('Currently')),
+      const Center(child: Text('Today')),
+      const Center(child: Text('Weekly')),
+    ];
+  }
+
+  // ── Build ──────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: SearchControls(
-          controller: _cityController,
-          onChanged: _handleOnSearchChanged,
-          onSubmitted: _submitSearch,
-          onLocationPressed: _loadCurrentLocationWeather,
-        ),
+      appBar: WeatherAppBar(
+        controller: _cityController,
+        onChanged: _onSearchChanged,
+        onSubmitted: _onSearchSubmitted,
+        onLocationPressed: _onLocationPressed,
       ),
-
-      body: PageView(
-          controller: _pageController,
-          onPageChanged: _handleOnTab,
-          children: [
-            Text('Currently'),
-            Text('Today'),
-            Text('Weekly'),
-          ],
-        ),
-        
+      body: _searchResults.isNotEmpty
+          ? CityResultsList(
+              results: _searchResults,
+              onCitySelected: _onCitySelected,
+            )
+          : PageView(
+              controller: _pageController,
+              onPageChanged: _onTabChanged,
+              children: _buildPages(),
+            ),
       bottomNavigationBar: WeatherBottomNavBar(
-        currentIndex: currentIndex,
-        onTabSelected: _handleOnTab,
+        currentIndex: _currentIndex,
+        onTabSelected: _onTabChanged,
       ),
-      
-      // body: showCityData
-      //     ? WeatherPageView(
-      //         pageController: _pageController,
-      //         pages: pages,
-      //         currentIndex: index,
-      //         onPageChanged: (newIndex) {
-      //           setState(() {
-      //             index = newIndex;
-      //           });
-      //         },
-      //         onTabSelected: (newIndex) {
-      //           if (_pageController.hasClients) {
-      //             _pageController.animateToPage(
-      //               newIndex,
-      //               duration: const Duration(milliseconds: 250),
-      //               curve: Curves.easeInOut,
-      //             );
-      //           }
-      //           setState(() {
-      //             index = newIndex;
-      //           });
-      //         },
-      //       )
-      //     : CityResultsList(
-      //         results: result,
-      //         onCitySelected: (city) async {
-      //           setState(() {
-      //             showCityData = true;
-      //           });
-      //           await updatePages(city);
-      //         },
-      //       ),
-          
     );
-  }
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: HomePage());
   }
 }

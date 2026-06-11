@@ -1,0 +1,36 @@
+name: diary_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Firebase core
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.15.3
+ 
+  # Google Sign-In
+  google_sign_in: ^6.2.1
+ 
+  # Firestore database (needed for ex01, set up now)
+  cloud_firestore: ^4.13.6
+ 
+  # GitHub OAuth via flutter_web_auth_2
+  flutter_web_auth_2: ^3.1.2
+  http: ^1.2.0
+ 
+  # UI
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

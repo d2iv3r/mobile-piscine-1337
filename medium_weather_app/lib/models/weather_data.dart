@@ -1,0 +1,31 @@
+class WeatherData {
+  final String city, region, country;
+  // current
+  final double currentTemp, currentWind;
+  final String currentDesc;
+  // hourly (today)
+  final List<String> hours;
+  final List<double> hourlyTemps, hourlyWinds;
+  final List<String> hourlyDescs;
+  // daily (weekly)
+  final List<String> dates;
+  final List<double> minTemps, maxTemps;
+  final List<String> dailyDescs;
+
+  WeatherData({
+    required this.city,
+    required this.region,
+    required this.country,
+    required this.currentTemp,
+    required this.currentWind,
+    required this.currentDesc,
+    required this.hours,
+    required this.hourlyTemps,
+    required this.hourlyWinds,
+    required this.hourlyDescs,
+    required this.dates,
+    required this.minTemps,
+    required this.maxTemps,
+    required this.dailyDescs,
+  });
+}

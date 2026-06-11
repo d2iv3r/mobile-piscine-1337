@@ -1,12 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
 const String cityNotFoundMessage =
     'The service connection is lost, please check your internet connection or try again later';
 const String apiFailureMessage =
-    'Could not find any result for the supplied address or coordinates.';
+    '';
 
 Future<Position> getCurrentLocation() async {
   bool serviceEnabled;
@@ -57,16 +59,22 @@ Future<Map<String, dynamic>?> reverseGeocode(
   double longitude,
 ) async {
   try {
-    final apiUrl =
-        'https://geocoding-api.open-meteo.com/v1/reverse?latitude=$latitude&longitude=$longitude&count=1&language=en&format=json';
-    final response = await http.get(Uri.parse(apiUrl));
+    final apiUrl = 'https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2';
+    final response = await http.get(Uri.parse(apiUrl),
+      headers: {'User-Agent': 'WeatherApp/1.0 (your@email.com)',
+  },);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final results = data['results'];
-      if (results is List && results.isNotEmpty) {
-        return Map<String, dynamic>.from(results.first as Map);
-      }
-      return null;
+      String? city = data['address']['city'] ?? data['address']['town'] ?? data['address']['village'] ?? 'Unknown location';
+      String? admin1 = data['address']['state'] ?? '';
+      String? country = data['address']['country'] ?? '';
+      return {
+        'name': city,
+        'admin1': admin1,
+        'country': country,
+        'latitude': latitude,
+        'longitude': longitude,
+      };
     }
     throw Exception('Failed to load city data');
   } catch (e) {
@@ -87,7 +95,10 @@ Future<Map<String, dynamic>> getCurrentWeather(
       return data['current_weather'] ?? {};
     }
     throw Exception('Failed to load weather data');
-  } catch (e) {
+  } on SocketException {
+    return Future.value({'error': 'No Internet connection. Please check your connection and try again.'});
+  }
+  catch (e) {
     rethrow;
   }
 }
@@ -105,7 +116,10 @@ Future<Map<String, dynamic>> getTodayWeather(
       return data['hourly'] ?? {};
     }
     throw Exception('Failed to load weather data');
-  } catch (e) {
+  } on SocketException {
+    return Future.value({'error': 'No Internet connection. Please check your connection and try again.'});
+  }
+  catch (e) {
     rethrow;
   }
 }

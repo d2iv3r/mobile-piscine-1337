@@ -10,7 +10,10 @@ class WeatherMessagePage extends StatelessWidget {
     return Center(
       child: Text(
         message,
-        style: const TextStyle(color: Colors.red),
+        style: const TextStyle(
+          color: Colors.red,
+          fontSize: 18,
+        ),
         textAlign: TextAlign.center,
       ),
     );

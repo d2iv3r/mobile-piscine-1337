@@ -7,7 +7,6 @@ void main() {
 class CentredTextButtonWidget extends StatelessWidget {
   const CentredTextButtonWidget({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return Center(
