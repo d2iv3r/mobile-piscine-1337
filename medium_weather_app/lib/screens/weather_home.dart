@@ -154,12 +154,6 @@ class _WeatherHomeState extends State<WeatherHome> {
         WeeklyScreen(weather: _weather!),
       ],
     );
-    // switch (_tab) {
-    //   case 0: return CurrentlyScreen(weather: _weather!);
-    //   case 1: return TodayScreen(weather: _weather!);
-    //   case 2: return WeeklyScreen(weather: _weather!);
-    //   default: return const SizedBox();
-    // }
   }
 
   @override

@@ -29,16 +29,8 @@ class TodayScreen extends StatelessWidget {
                 ),
               );
             },
-            // itemBuilder: (ctx, i) => ListTile(
-            //   title: Text(
-            //     '${weather.hours[i]}  '
-            //     '${weather.hourlyTemps[i].toStringAsFixed(1)}°C  '
-            //     '${weather.hourlyDescs[i]}',
-            //   ),
-            //   trailing: Text('${weather.hourlyWinds[i].toStringAsFixed(1)} km/h'),
-            ),
           ),
-        // ),
+        ),
       ],
     );
   }

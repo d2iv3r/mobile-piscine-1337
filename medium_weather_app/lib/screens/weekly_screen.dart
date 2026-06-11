@@ -29,14 +29,6 @@ class WeeklyScreen extends StatelessWidget {
                 ),
               );
             },
-            // itemBuilder: (ctx, i) => ListTile(
-            //   title: Text(weather.dates[i]),
-            //   subtitle: Text(weather.dailyDescs[i]),
-            //   trailing: Text(
-            //     '${weather.minTemps[i].toStringAsFixed(0)}° / '
-            //     '${weather.maxTemps[i].toStringAsFixed(0)}°C',
-            //   ),
-            // ),
           ),
         ),
       ],
