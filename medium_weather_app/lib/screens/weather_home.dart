@@ -41,9 +41,11 @@ class _WeatherHomeState extends State<WeatherHome> {
       if (city.isNotEmpty) {
         final w = await fetchWeather(pos.latitude, pos.longitude, city['name'], city['admin1'], city['country']);
         setState(() { _weather = w; });
+        _restoreTab();
       } else {
         final w = await fetchWeather(pos.latitude, pos.longitude, 'Current location', '', '');
         setState(() { _weather = w; });
+        _restoreTab();
       }
     } catch (e) {
       final msg = e.toString();
@@ -70,6 +72,14 @@ class _WeatherHomeState extends State<WeatherHome> {
     }
   }
 
+  void _restoreTab() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_pageController.hasClients && _tab != 0) {
+        _pageController.jumpToPage(_tab);
+      }
+    });
+  }
+
   void _onTabChanged(int index) {
     setState(() => _tab = index);
     if (_pageController.hasClients) {
@@ -87,6 +97,7 @@ class _WeatherHomeState extends State<WeatherHome> {
     try {
       final w = await fetchWeather(city.lat, city.lon, city.name, city.region, city.country);
       setState(() { _weather = w; });
+      _restoreTab();
     } catch (_) {
       setState(() { _error = 'The service connection is lost, please check your internet connection or try again later'; _weather = null; });
     } finally {
@@ -107,6 +118,7 @@ class _WeatherHomeState extends State<WeatherHome> {
       final c = cities.first;
       final w = await fetchWeather(c.lat, c.lon, c.name, c.region, c.country);
       setState(() { _weather = w; });
+      _restoreTab();
     } catch (_) {
       setState(() { _error = 'The service connection is lost, please check your internet connection or try again later'; _weather = null; });
     } finally {
@@ -147,7 +159,7 @@ class _WeatherHomeState extends State<WeatherHome> {
     }
     return PageView(
       controller: _pageController,
-      onPageChanged: _onTabChanged,
+      onPageChanged: (index) => setState(() => _tab = index),
       children: [
         CurrentlyScreen(weather: _weather!),
         TodayScreen(weather: _weather!),
