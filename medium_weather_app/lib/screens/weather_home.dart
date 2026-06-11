@@ -33,6 +33,13 @@ class _WeatherHomeState extends State<WeatherHome> {
     _requestLocation();
   }
 
+   @override
+  void dispose() {
+    _pageController.dispose();
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> _requestLocation() async {
     setState(() { _loading = true; _error = null; _geoError = null; });
     try {
