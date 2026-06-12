@@ -11,7 +11,6 @@ String weatherIcon(int code) {
   return '🌡️';
 }
 
-// Also map description → icon (for when we only have the string)
 String weatherIconFromDesc(String desc) {
   final d = desc.toLowerCase();
   if (d.contains('clear') || d.contains('sunny')) return '☀️';

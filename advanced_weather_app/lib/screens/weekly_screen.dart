@@ -9,7 +9,6 @@ class WeeklyScreen extends StatelessWidget {
   final WeatherData weather;
   const WeeklyScreen({super.key, required this.weather});
 
-  // "2024-06-11" -> "Wed\n11/06"
   String _formatDate(String date) {
     final d = DateTime.tryParse(date);
     if (d == null) return date;
@@ -35,11 +34,11 @@ class WeeklyScreen extends StatelessWidget {
     List<FlSpot> maxSpots() => List.generate(
         weather.maxTemps.length, (i) => FlSpot(i.toDouble(), weather.maxTemps[i]));
 
-    return Column(
-      children: [
+    return SingleChildScrollView(
+      child: Column(
+        children: [
         LocationHeader(weather: weather),
 
-        // ── Chart ──────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Container(
@@ -55,7 +54,7 @@ class WeeklyScreen extends StatelessWidget {
                 const Text('Weekly temperatures',
                     style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 4),
-                // Legend
+
                 Row(children: [
                   _legendDot(AppColors.chartMin), const SizedBox(width: 4),
                   const Text('Min', style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
@@ -121,14 +120,14 @@ class WeeklyScreen extends StatelessWidget {
 
         const SizedBox(height: 12),
 
-        // ── Daily list ─────────────────────────────────────────
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: weather.dates.length,
-            itemBuilder: (ctx, i) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          itemCount: weather.dates.length,
+          itemBuilder: (ctx, i) => Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -175,8 +174,8 @@ class WeeklyScreen extends StatelessWidget {
               ),
             ),
           ),
-        ),
       ],
+      ),
     );
   }
 

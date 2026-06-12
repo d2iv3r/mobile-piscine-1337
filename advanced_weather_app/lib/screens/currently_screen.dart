@@ -11,9 +11,10 @@ class CurrentlyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
           LocationHeader(weather: weather),
           const SizedBox(height: 16),
           Text(
@@ -61,6 +62,7 @@ class CurrentlyScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

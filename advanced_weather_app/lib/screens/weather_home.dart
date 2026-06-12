@@ -51,6 +51,7 @@ class _WeatherHomeState extends State<WeatherHome> {
         city['country'] ?? '',
       );
       setState(() { _weather = w; });
+      _restoreTab();
     } catch (e) {
       final msg = e.toString();
       if (msg.contains('Geolocation')) {
@@ -61,6 +62,14 @@ class _WeatherHomeState extends State<WeatherHome> {
     } finally {
       setState(() { _loading = false; });
     }
+  }
+
+  void _restoreTab() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_pageController.hasClients && _tab != 0) {
+        _pageController.jumpToPage(_tab);
+      }
+    });
   }
 
   Future<void> _onSearchChanged(String value) async {
@@ -88,6 +97,7 @@ class _WeatherHomeState extends State<WeatherHome> {
     try {
       final w = await fetchWeather(city.lat, city.lon, city.name, city.region, city.country);
       setState(() { _weather = w; });
+      _restoreTab();
     } catch (_) {
       setState(() { _error = 'The service connection is lost, please check your internet connection or try again later.'; _weather = null; });
     } finally {
@@ -109,6 +119,7 @@ class _WeatherHomeState extends State<WeatherHome> {
       final c = cities.first;
       final w = await fetchWeather(c.lat, c.lon, c.name, c.region, c.country);
       setState(() { _weather = w; });
+      _restoreTab();
     } catch (_) {
       setState(() { _error = 'The service connection is lost, please check your internet connection or try again later.'; _weather = null; });
     } finally {
@@ -177,7 +188,6 @@ class _WeatherHomeState extends State<WeatherHome> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // ── Fixed background gradient ───────────────────────
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -187,12 +197,9 @@ class _WeatherHomeState extends State<WeatherHome> {
               ),
             ),
           ),
-
-          // ── Content ────────────────────────────────────────
           SafeArea(
             child: Column(
               children: [
-                // AppBar row
                 Container(
                   color: Colors.transparent,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -227,15 +234,9 @@ class _WeatherHomeState extends State<WeatherHome> {
                     ],
                   ),
                 ),
-
-                // Suggestion list
                 if (_suggestions.isNotEmpty)
                   SuggestionList(suggestions: _suggestions, onSelect: _selectCity),
-
-                // Main content
                 Expanded(child: _buildBody()),
-
-                // Bottom nav
                 _buildBottomNav(),
               ],
             ),

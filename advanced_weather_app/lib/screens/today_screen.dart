@@ -22,17 +22,16 @@ class TodayScreen extends StatelessWidget {
     final minY   = (temps.reduce((a, b) => a < b ? a : b) - 2).floorToDouble();
     final maxY   = (temps.reduce((a, b) => a > b ? a : b) + 2).ceilToDouble();
 
-    // Show every 3 hours on x-axis
     final xLabels = <int, String>{};
-    for (int i = 0; i < weather.hours.length; i += 3) {
+    for (int i = 0; i < weather.hours.length; i += 1) {
       xLabels[i] = weather.hours[i].substring(0, 5);
     }
 
-    return Column(
-      children: [
+    return SingleChildScrollView(
+      child: Column(
+        children: [
         LocationHeader(weather: weather),
 
-        // ── Chart ──────────────────────────────────────────────
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Container(
@@ -117,14 +116,14 @@ class TodayScreen extends StatelessWidget {
 
         const SizedBox(height: 12),
 
-        // ── Hourly list ────────────────────────────────────────
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: weather.hours.length,
-            itemBuilder: (ctx, i) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          itemCount: weather.hours.length,
+          itemBuilder: (ctx, i) => Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
@@ -172,8 +171,8 @@ class TodayScreen extends StatelessWidget {
               ),
             ),
           ),
-        ),
       ],
+      ),
     );
   }
 }

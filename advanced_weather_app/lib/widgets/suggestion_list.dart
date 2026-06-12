@@ -15,11 +15,8 @@ class SuggestionList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (suggestions.isEmpty) return const SizedBox();
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D1B2A),
-        border: Border(bottom: BorderSide(color: Colors.white12)),
-      ),
+    return Material(
+      color: const Color(0xFF0D1B2A),
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -27,15 +24,16 @@ class SuggestionList extends StatelessWidget {
         separatorBuilder: (_, __) => const Divider(color: Colors.white12, height: 1),
         itemBuilder: (ctx, i) {
           final c = suggestions[i];
-          return ListTile(
-            leading: const Icon(Icons.location_on, color: AppColors.accent, size: 20),
-            title: Text(c.name,
-                style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
-            subtitle: Text('${c.region}, ${c.country}',
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-            onTap: () => onSelect(c),
-            dense: true,
-          );
+          return 
+            ListTile(
+              leading: const Icon(Icons.location_on, color: AppColors.accent, size: 20),
+              title: Text(c.name,
+                  style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
+              subtitle: Text('${c.region}, ${c.country}',
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+              onTap: () => onSelect(c),
+              dense: true,
+            );
         },
       ),
     );

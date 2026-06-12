@@ -4,12 +4,12 @@ class WeatherData {
   final double currentTemp, currentWind;
   final String currentDesc;
   final int currentCode;
-  // hourly (today)
+  // today
   final List<String> hours;
   final List<double> hourlyTemps, hourlyWinds;
   final List<String> hourlyDescs;
   final List<int> hourlyCodes;
-  // daily (weekly)
+  // weekly
   final List<String> dates;
   final List<double> minTemps, maxTemps;
   final List<String> dailyDescs;
