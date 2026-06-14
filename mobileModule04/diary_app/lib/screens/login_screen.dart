@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import 'diary_screen.dart';
 
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen>
   void _navigateToDiary() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
-        pageBuilder: (_, __, ___) => const Center(child: Text('Welcome back, User!', style: TextStyle(fontSize: 24))),
+        pageBuilder: (_, __, ___) => const DiaryScreen(),
         transitionsBuilder: (_, anim, __, child) =>
             FadeTransition(opacity: anim, child: child),
         transitionDuration: const Duration(milliseconds: 400),
@@ -98,7 +98,6 @@ class _LoginScreenState extends State<LoginScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // ── Background ────────────────────────────────────────────────────
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -113,7 +112,6 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
 
-          // ── Decorative circles ────────────────────────────────────────────
           Positioned(
             top: -60,
             right: -60,
@@ -122,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen>
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
               ),
             ),
           ),
@@ -134,12 +132,11 @@ class _LoginScreenState extends State<LoginScreen>
               height: 280,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.06),
+                color: Colors.white.withValues(alpha: 0.06),
               ),
             ),
           ),
 
-          // ── Content ───────────────────────────────────────────────────────
           SafeArea(
             child: FadeTransition(
               opacity: _fadeAnim,
@@ -151,7 +148,6 @@ class _LoginScreenState extends State<LoginScreen>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // ── Logo ──────────────────────────────────────────
                         Container(
                           width: 88,
                           height: 88,
@@ -160,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen>
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.15),
+                                color: Colors.black.withValues(alpha: 0.15),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),
@@ -174,7 +170,6 @@ class _LoginScreenState extends State<LoginScreen>
                         ),
                         const SizedBox(height: 28),
 
-                        // ── Title ─────────────────────────────────────────
                         const Text(
                           'Welcome to your\nDiary',
                           textAlign: TextAlign.center,
@@ -191,13 +186,12 @@ class _LoginScreenState extends State<LoginScreen>
                           'Your thoughts, safely stored.',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                             letterSpacing: 0.2,
                           ),
                         ),
                         const SizedBox(height: 48),
 
-                        // ── Auth card ─────────────────────────────────────
                         Container(
                           padding: const EdgeInsets.all(28),
                           decoration: BoxDecoration(
@@ -205,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen>
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.12),
+                                color: Colors.black.withValues(alpha: 0.12),
                                 blurRadius: 24,
                                 offset: const Offset(0, 12),
                               ),
@@ -234,7 +228,6 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               const SizedBox(height: 28),
 
-                              // ── Error message ──────────────────────────
                               if (_errorMessage != null) ...[
                                 Container(
                                   padding: const EdgeInsets.all(12),
@@ -268,7 +261,6 @@ class _LoginScreenState extends State<LoginScreen>
                                 const SizedBox(height: 20),
                               ],
 
-                              // ── Google button ──────────────────────────
                               _SignInButton(
                                 onPressed: _isLoading ? null : _handleGoogleSignIn,
                                 isLoading: _isLoading,
@@ -280,7 +272,6 @@ class _LoginScreenState extends State<LoginScreen>
                               ),
                               const SizedBox(height: 12),
 
-                              // ── GitHub button ──────────────────────────
                               _SignInButton(
                                 onPressed: _isLoading ? null : _handleGitHubSignIn,
                                 isLoading: _isLoading,
@@ -294,16 +285,16 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ),
 
-                        const SizedBox(height: 32),
-                        Text(
-                          'By signing in, you agree to keep your\nthoughts private and secure.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.65),
-                            height: 1.5,
-                          ),
-                        ),
+                        // const SizedBox(height: 32),
+                        // Text(
+                        //   'By signing in, you agree to keep your\nthoughts private and secure.',
+                        //   textAlign: TextAlign.center,
+                        //   style: TextStyle(
+                        //     fontSize: 12,
+                        //     color: Colors.white.withValues(alpha: 0.65),
+                        //     height: 1.5,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -312,10 +303,9 @@ class _LoginScreenState extends State<LoginScreen>
             ),
           ),
 
-          // ── Loading overlay ───────────────────────────────────────────────
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               child: const Center(
                 child: CircularProgressIndicator(color: Colors.white),
               ),
@@ -325,8 +315,6 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 }
-
-// ─── Sign-in Button Widget ────────────────────────────────────────────────────
 
 class _SignInButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -382,8 +370,6 @@ class _SignInButton extends StatelessWidget {
   }
 }
 
-// ─── Google Icon (SVG-like using CustomPaint) ─────────────────────────────────
-
 class _GoogleIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -397,11 +383,9 @@ class _GoogleLogoPainter extends CustomPainter {
     final double s = size.width;
     final Paint paint = Paint()..style = PaintingStyle.fill;
 
-    // Simplified Google "G" using arcs
     final center = Offset(s / 2, s / 2);
     final radius = s * 0.46;
 
-    // Blue arc (right side)
     paint.color = const Color(0xFF4285F4);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
@@ -413,7 +397,6 @@ class _GoogleLogoPainter extends CustomPainter {
         ..strokeCap = StrokeCap.butt,
     );
 
-    // Red arc (top)
     paint.color = const Color(0xFFEA4335);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
@@ -423,7 +406,6 @@ class _GoogleLogoPainter extends CustomPainter {
       paint,
     );
 
-    // Yellow arc (bottom left)
     paint.color = const Color(0xFFFBBC05);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
@@ -433,7 +415,6 @@ class _GoogleLogoPainter extends CustomPainter {
       paint,
     );
 
-    // Green arc (bottom right to right)
     paint.color = const Color(0xFF34A853);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
@@ -443,7 +424,6 @@ class _GoogleLogoPainter extends CustomPainter {
       paint,
     );
 
-    // Horizontal bar of "G"
     paint
       ..style = PaintingStyle.fill
       ..color = const Color(0xFF4285F4);
@@ -456,8 +436,6 @@ class _GoogleLogoPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-// ─── GitHub Icon ──────────────────────────────────────────────────────────────
 
 class _GitHubIcon extends StatelessWidget {
   const _GitHubIcon();

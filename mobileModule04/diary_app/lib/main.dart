@@ -29,7 +29,6 @@ class DiaryApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Georgia',
       ),
-      // Auth state listener: route directly to diary if already logged in
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -37,12 +36,7 @@ class DiaryApp extends StatelessWidget {
             return const _SplashScreen();
           }
           if (snapshot.hasData && snapshot.data != null) {
-            return Center(
-              child: Text(
-                'Welcome back, ${snapshot.data!.displayName ?? 'User'}!',
-                style: TextStyle(fontSize: 24),
-              ),
-            );
+            return const DiaryScreen();
           }
           return const LoginScreen();
         },

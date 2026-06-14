@@ -1,0 +1,16 @@
+Analyzing diary_app...                                          
+
+warning • Unused import: 'screens/diary_screen.dart'. Try removing the import directive • lib/main.dart:6:8 • unused_import
+warning • Unused import: 'package:firebase_auth/firebase_auth.dart'. Try removing the import directive • lib/screens/login_screen.dart:2:8 • unused_import
+warning • Unused import: 'diary_screen.dart'. Try removing the import directive • lib/screens/login_screen.dart:4:8 • unused_import
+   info • Unnecessary use of multiple underscores. Try using '_' • lib/screens/login_screen.dart:88:26 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores. Try using '_' • lib/screens/login_screen.dart:88:30 • unnecessary_underscores
+   info • Unnecessary use of multiple underscores. Try using '_' • lib/screens/login_screen.dart:89:39 • unnecessary_underscores
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:125:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:137:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:163:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:194:49 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:208:53 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:303:49 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement • lib/screens/login_screen.dart:318:35 • deprecated_member_use
+

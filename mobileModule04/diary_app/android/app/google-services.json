@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:257559916988:android:1f4c53ecdaf9088a9cfbb9",
+        "mobilesdk_app_id": "1:257559916988:android:735649222d4da8049cfbb9",
         "android_client_info": {
           "package_name": "com.example.diary_app"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "257559916988-rop72eg0lkkad7jgol2ubl0t4smru2sh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.diary_app",
+            "certificate_hash": "7a7e4f31f457141fbd686af39505f0020db1f18d"
+          }
+        },
         {
           "client_id": "257559916988-ka4cjhg24bjiivjr6vuo5f3ed473mg3f.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +37,13 @@
             {
               "client_id": "257559916988-ka4cjhg24bjiivjr6vuo5f3ed473mg3f.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "257559916988-p57fomb7ui9rbdckspa5cs86nh9ci82p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.diaryApp"
+              }
             }
           ]
         }
