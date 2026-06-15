@@ -50,7 +50,6 @@ class AuthService {
     }
 }
 
-
   Future<void> signOut() async {
     await Future.wait([
       _auth.signOut(),
