@@ -29,7 +29,6 @@ class DiaryApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Georgia',
       ),
-      // Auth state listener: route directly to the app if already logged in.
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

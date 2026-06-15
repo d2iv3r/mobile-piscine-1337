@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import 'diary_screen.dart';
 
@@ -284,17 +283,6 @@ class _LoginScreenState extends State<LoginScreen>
                             ],
                           ),
                         ),
-
-                        // const SizedBox(height: 32),
-                        // Text(
-                        //   'By signing in, you agree to keep your\nthoughts private and secure.',
-                        //   textAlign: TextAlign.center,
-                        //   style: TextStyle(
-                        //     fontSize: 12,
-                        //     color: Colors.white.withValues(alpha: 0.65),
-                        //     height: 1.5,
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),

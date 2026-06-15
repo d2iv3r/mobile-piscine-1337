@@ -5,12 +5,6 @@ import '../models/diary_entry.dart';
 import '../services/diary_service.dart';
 import 'entry_screen.dart';
 
-/// Exercise 01: Agenda Page
-///
-/// - Displays a calendar (current date selected by default).
-/// - Selecting a date shows a scrollable list of entries from that date.
-/// - Tapping an entry opens it (view/delete).
-/// - The list updates live via Firestore snapshots.
 class AgendaScreen extends StatefulWidget {
   const AgendaScreen({super.key});
 
@@ -43,15 +37,12 @@ class _AgendaScreenState extends State<AgendaScreen> {
           final allEntries = snapshot.data ?? [];
           final isLoading = snapshot.connectionState == ConnectionState.waiting;
 
-          // Days that have at least one entry (used to mark the calendar).
           final entryDays = allEntries.map((e) => DateTime(e.date.year, e.date.month, e.date.day)).toSet();
 
-          // Entries for the currently selected day.
           final dayEntries = allEntries.where((e) => _isSameDay(e.date, _selectedDay)).toList();
 
           return CustomScrollView(
             slivers: [
-              // ── Calendar ────────────────────────────────────────────
               SliverToBoxAdapter(
                 child: Container(
                   margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
@@ -59,7 +50,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
-                      BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2)),
+                      BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 2)),
                     ],
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 8),
@@ -97,7 +88,7 @@ class _AgendaScreenState extends State<AgendaScreen> {
                     ),
                     calendarStyle: CalendarStyle(
                       todayDecoration: BoxDecoration(
-                        color: const Color(0xFF4CAF82).withOpacity(0.3),
+                        color: const Color(0xFF4CAF82).withValues(alpha: 0.3),
                         shape: BoxShape.circle,
                       ),
                       selectedDecoration: const BoxDecoration(
@@ -115,7 +106,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 ),
               ),
 
-              // ── Selected day label ──────────────────────────────────
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -132,7 +122,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
                 ),
               ),
 
-              // ── Entries for selected day ────────────────────────────
               if (isLoading)
                 const SliverFillRemaining(
                   hasScrollBody: false,
@@ -173,8 +162,6 @@ class _AgendaScreenState extends State<AgendaScreen> {
   }
 }
 
-// ─── Agenda entry tile ───────────────────────────────────────────────────────
-
 class _AgendaEntryTile extends StatelessWidget {
   final DiaryEntry entry;
 
@@ -190,7 +177,7 @@ class _AgendaEntryTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: const Color(0xFFE8F0EB)),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Material(

@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Represents a single diary entry stored in Firestore.
 class DiaryEntry {
   final String id;
   final String userEmail;
   final DateTime date;
   final String title;
-  final String feeling; // e.g. "happy", "sad", "satisfied", "angry", "neutral"
+  final String feeling; // "happy", "sad", "satisfied", "angry", "neutral"
   final String content;
 
   DiaryEntry({
@@ -18,7 +17,6 @@ class DiaryEntry {
     required this.content,
   });
 
-  /// Build a DiaryEntry from a Firestore document.
   factory DiaryEntry.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data()!;
     return DiaryEntry(
@@ -31,8 +29,6 @@ class DiaryEntry {
     );
   }
 
-  /// Convert this entry to a map matching the Firestore structure
-  /// shown in the subject (date, title, icon, text, usermail).
   Map<String, dynamic> toMap() {
     return {
       'usermail': userEmail,
@@ -44,7 +40,6 @@ class DiaryEntry {
   }
 }
 
-/// Available "feeling of the day" options with matching icons/colors.
 class Feeling {
   final String key;
   final String label;
@@ -63,7 +58,7 @@ class Feeling {
   static Feeling fromKey(String key) {
     return all.firstWhere(
       (f) => f.key == key,
-      orElse: () => all[2], // neutral
+      orElse: () => all[2],
     );
   }
 }

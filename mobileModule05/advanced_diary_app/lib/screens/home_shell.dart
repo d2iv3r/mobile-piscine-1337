@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'profile_screen.dart';
 import 'agenda_screen.dart';
 
-/// Hosts the two main pages of the app (Profile + Agenda) behind a
-/// bottom navigation bar, as required by the Module 05 subject:
-/// "Your application must now have 3 pages: login, profile, agenda."
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 

@@ -7,17 +7,6 @@ import '../services/diary_service.dart';
 import 'entry_screen.dart';
 import 'login_screen.dart';
 
-/// Exercise 00: Profile Page
-///
-/// Displays:
-/// - User's name + avatar
-/// - Logout button
-/// - Last 2 diary entries (date, feeling, title) — tap to view/delete
-/// - Total entry count
-/// - Feelings breakdown (percentage of use across all entries)
-/// - Button to add a new entry
-///
-/// Everything updates live via a Firestore snapshot stream.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -40,7 +29,6 @@ class ProfileScreen extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.only(bottom: 24),
               children: [
-                // ── Header ────────────────────────────────────────────
                 Container(
                   width: double.infinity,
                   color: const Color(0xFF2E7D52),
@@ -68,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(height: 2),
                             Text(
                               user?.email ?? '',
-                              style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 13),
+                              style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 13),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
@@ -99,7 +87,6 @@ class ProfileScreen extends StatelessWidget {
                 else ...[
                   const SizedBox(height: 16),
 
-                  // ── Last 2 entries ──────────────────────────────────
                   _SectionCard(
                     title: 'Your last diary entries',
                     headerColor: const Color(0xFF4CAF82),
@@ -112,7 +99,6 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // ── Total entries ───────────────────────────────────
                   _SectionCard(
                     title: 'Total entries',
                     headerColor: const Color(0xFF66BB6A),
@@ -133,7 +119,6 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // ── Feelings breakdown ──────────────────────────────
                   _SectionCard(
                     title: entries.isEmpty
                         ? 'Your feelings'
@@ -146,7 +131,6 @@ class ProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // ── New entry button ─────────────────────────────────
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: SizedBox(
@@ -189,7 +173,6 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-// ─── Section card wrapper ───────────────────────────────────────────────────
 
 class _SectionCard extends StatelessWidget {
   final String title;
@@ -206,9 +189,9 @@ class _SectionCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: headerColor.withOpacity(0.4)),
+          border: Border.all(color: headerColor.withValues(alpha: 0.4)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 8, offset: const Offset(0, 2)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 8, offset: const Offset(0, 2)),
           ],
         ),
         clipBehavior: Clip.antiAlias,
@@ -234,8 +217,6 @@ class _SectionCard extends StatelessWidget {
     );
   }
 }
-
-// ─── Entry row (used in "last entries" list) ────────────────────────────────
 
 class _EntryRow extends StatelessWidget {
   final DiaryEntry entry;
@@ -298,8 +279,6 @@ class _EntryRow extends StatelessWidget {
     );
   }
 }
-
-// ─── Feelings breakdown ──────────────────────────────────────────────────────
 
 class _FeelingsBreakdown extends StatelessWidget {
   final List<DiaryEntry> entries;
